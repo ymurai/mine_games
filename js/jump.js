@@ -6,10 +6,16 @@
 
   // Initialize the application
   await app.init({
-     background: '#1099bb',
-     width: 800,
-     height: 600,
-    });
+    background: '#1099bb',
+    width: 800,
+    height: 600,
+  });
+
+  const cell = {
+    width: 24,
+    height: 24,
+  };
+  const groundLevel = app.screen.height - cell.height * (2 + 1);
 
   // Append the application canvas to the document body
   // document.body.appendChild(app.canvas);
@@ -35,15 +41,25 @@
 
   // Position the character in the center of the screen
   character.x = app.screen.width / 2;
-  character.y = app.screen.height / 2;
+  character.y = groundLevel;
 
   // Add the character to the stage
   app.stage.addChild(character);
 
+  // Load the ground texture
+  const groundTexture = await PIXI.Assets.load('../img/block.png');
+  const ground = new PIXI.TilingSprite(
+    groundTexture,
+    app.screen.width,
+    app.screen.height - groundLevel - cell.height,
+  );
+  ground.tileScale.set(24 / 500);
+  ground.y = app.screen.height - ground.height * 1;
+  app.stage.addChild(ground);
+
   // Key press event listener
   document.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
-      event.preventDefault();
       if (!isJumping) {
         isJumping = true;
         jumpVelocity = -jumpHeight;
@@ -54,13 +70,15 @@
 
   // Game loop
   function gameLoop() {
+    ground.tilePosition.x -= 5;
+
     if (isJumping) {
       character.y += jumpVelocity;
       jumpVelocity += gravity;
 
       // Check if the character has landed
-      if (character.y >= app.screen.height / 2) {
-        character.y = app.screen.height / 2;
+      if (character.y >= groundLevel) {
+        character.y = groundLevel;
         isJumping = false;
         jumpVelocity = 0;
       }
