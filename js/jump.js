@@ -11,229 +11,205 @@
     height: 600,
   });
 
-  const cell = {
-    width: 24,
-    height: 24,
+  const GAME_CONFIG = {
+    CELL_SIZE: 24,
+    GRAVITY: 0.5,
+    JUMP_HEIGHT: 15,
+    GAME_SPEED: 5,
+    HOLE_MIN_DISTANCE: 200,
+    HOLE_MAX_DISTANCE: 500,
+    HOLE_WIDTH: 120,
+    GROUND_DEPTH: 3
   };
-  const groundLevel = app.screen.height - cell.height * (2 + 1);
+  
+  const groundLevel = app.screen.height - GAME_CONFIG.CELL_SIZE * GAME_CONFIG.GROUND_DEPTH;
 
-  // Append the application canvas to the document body
-  // document.body.appendChild(app.canvas);
   document.body.querySelector('.game-screen').appendChild(app.canvas);
 
-  // Create and add a container to the stage
   const container = new PIXI.Container();
-
   app.stage.addChild(container);
 
-  // Set up jump variables
-  let isJumping = false;
-  let jumpVelocity = 0;
-  const gravity = 0.5;
-  const jumpHeight = 15;
+  const gameState = {
+    current: 'start',
+    isJumping: false,
+    jumpVelocity: 0,
+    holes: [],
+    gameOver: false,
+    nextHoleDistance: 0
+  };
 
-  // Set up hole variables
-  let holes = [];
-  let gameSpeed = 5;
-  let gameOver = false;
-  let nextHoleDistance = 0;
-  
-  // Game state management
-  let gameState = 'start'; // 'start', 'playing', 'gameOver'
-
-  // Load the bunny texture
   const texture = await PIXI.Assets.load('https://pixijs.com/assets/bunny.png');
   const character = new PIXI.Sprite(texture);
-
-  // Set the character's anchor point to the center
   character.anchor.set(0.5);
-
-  // Position the character in the center of the screen
   character.x = app.screen.width / 2;
   character.y = groundLevel;
-
-  // Add the character to the stage
   app.stage.addChild(character);
 
-  // Load the ground texture
   const groundTexture = await PIXI.Assets.load('/mine_games/img/block.png');
   const ground = new PIXI.TilingSprite(
     groundTexture,
     app.screen.width,
-    app.screen.height - groundLevel - cell.height,
+    app.screen.height - groundLevel - GAME_CONFIG.CELL_SIZE,
   );
-  ground.tileScale.set(24 / 500);
-  ground.y = app.screen.height - ground.height * 1;
+  ground.tileScale.set(GAME_CONFIG.CELL_SIZE / 500);
+  ground.y = app.screen.height - ground.height;
   app.stage.addChild(ground);
 
-  // Create a graphics object for drawing holes
   const holeGraphics = new PIXI.Graphics();
   app.stage.addChild(holeGraphics);
 
-  // Function to create a hole
   function createHole() {
     const hole = {
       x: app.screen.width,
-      width: 120,
-      height: cell.height
+      width: GAME_CONFIG.HOLE_WIDTH,
+      height: GAME_CONFIG.CELL_SIZE
     };
-    holes.push(hole);
+    gameState.holes.push(hole);
   }
 
-  // Key press event listener
   document.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
-      if (gameState === 'start') {
-        startGame();
-      } else if (gameState === 'playing' && !isJumping) {
-        isJumping = true;
-        jumpVelocity = -jumpHeight;
-      } else if (gameState === 'gameOver') {
-        restartGame();
-      }
+      handleSpacePress();
     }
-    return false; // Prevent default action
+    return false;
   });
 
-  // Function to start the game
+  function handleSpacePress() {
+    if (gameState.current === 'start') {
+      startGame();
+    } else if (gameState.current === 'playing' && !gameState.isJumping) {
+      jump();
+    } else if (gameState.current === 'gameOver') {
+      restartGame();
+    }
+  }
+
+  function jump() {
+    gameState.isJumping = true;
+    gameState.jumpVelocity = -GAME_CONFIG.JUMP_HEIGHT;
+  }
+
   function startGame() {
-    gameState = 'playing';
-    gameOver = false;
-    isJumping = false;
-    jumpVelocity = 0;
-    character.y = groundLevel;
-    holes = [];
-    nextHoleDistance = 200;
-    
-    // Remove all text elements (start screen text)
-    const textsToRemove = app.stage.children.filter(child => child instanceof PIXI.Text);
-    textsToRemove.forEach(text => app.stage.removeChild(text));
+    resetGameState();
+    gameState.current = 'playing';
+    removeAllText();
   }
 
-  // Function to restart the game
   function restartGame() {
-    gameState = 'playing';
-    gameOver = false;
-    isJumping = false;
-    jumpVelocity = 0;
+    resetGameState();
+    gameState.current = 'playing';
+    removeAllText();
+  }
+
+  function resetGameState() {
+    gameState.gameOver = false;
+    gameState.isJumping = false;
+    gameState.jumpVelocity = 0;
+    gameState.holes = [];
+    gameState.nextHoleDistance = GAME_CONFIG.HOLE_MIN_DISTANCE;
     character.y = groundLevel;
-    holes = [];
-    nextHoleDistance = 200;
-    
-    // Remove all text elements (game over and restart text)
+  }
+
+  function removeAllText() {
     const textsToRemove = app.stage.children.filter(child => child instanceof PIXI.Text);
     textsToRemove.forEach(text => app.stage.removeChild(text));
   }
 
-  // Game loop
   function gameLoop() {
-    if (gameState === 'playing') {
-      ground.tilePosition.x -= gameSpeed;
-
-      // Generate holes
-      nextHoleDistance -= gameSpeed;
-      if (nextHoleDistance <= 0) {
-        createHole();
-        nextHoleDistance = 200 + Math.random() * 300;
-      }
-
-      // Update holes
-      holes.forEach((hole, index) => {
-        hole.x -= gameSpeed;
-        if (hole.x + hole.width < 0) {
-          holes.splice(index, 1);
-        }
-      });
-
-      // Draw holes
-      holeGraphics.clear();
-      holes.forEach((hole) => {
-        holeGraphics.rect(hole.x, groundLevel + hole.height, hole.width, hole.height);
-        holeGraphics.fill(0x000000);
-      });
-
-      // Check collision with holes
-      holes.forEach((hole) => {
-        if (character.x + character.width/2 > hole.x && 
-            character.x - character.width/2 < hole.x + hole.width &&
-            character.y + character.height/2 >= groundLevel) {
-          gameState = 'gameOver';
-          showGameOver();
-        }
-      });
-
-      if (isJumping) {
-        character.y += jumpVelocity;
-        jumpVelocity += gravity;
-
-        // Check if the character has landed
-        if (character.y >= groundLevel) {
-          character.y = groundLevel;
-          isJumping = false;
-          jumpVelocity = 0;
-        }
-      }
+    if (gameState.current === 'playing') {
+      updateGround();
+      updateHoles();
+      drawHoles();
+      checkCollisions();
+      updateCharacter();
     }
     requestAnimationFrame(gameLoop);
   }
 
-  // Function to show start screen
-  function showStartScreen() {
-    const titleStyle = new PIXI.TextStyle({
-      fontFamily: 'Arial',
-      fontSize: 48,
-      fill: 0xffffff,
-      align: 'center',
-    });
-    const titleText = new PIXI.Text('JUMP GAME', titleStyle);
-    titleText.x = app.screen.width / 2;
-    titleText.y = app.screen.height / 2 - 60;
-    titleText.anchor.set(0.5);
-    app.stage.addChild(titleText);
+  function updateGround() {
+    ground.tilePosition.x -= GAME_CONFIG.GAME_SPEED;
+  }
 
-    const startStyle = new PIXI.TextStyle({
-      fontFamily: 'Arial',
-      fontSize: 24,
-      fill: 0xffffff,
-      align: 'center',
+  function updateHoles() {
+    gameState.nextHoleDistance -= GAME_CONFIG.GAME_SPEED;
+    if (gameState.nextHoleDistance <= 0) {
+      createHole();
+      gameState.nextHoleDistance = GAME_CONFIG.HOLE_MIN_DISTANCE + Math.random() * (GAME_CONFIG.HOLE_MAX_DISTANCE - GAME_CONFIG.HOLE_MIN_DISTANCE);
+    }
+
+    gameState.holes.forEach((hole, index) => {
+      hole.x -= GAME_CONFIG.GAME_SPEED;
+      if (hole.x + hole.width < 0) {
+        gameState.holes.splice(index, 1);
+      }
     });
-    const startText = new PIXI.Text('Press SPACE to start', startStyle);
-    startText.x = app.screen.width / 2;
-    startText.y = app.screen.height / 2 + 20;
-    startText.anchor.set(0.5);
+  }
+
+  function drawHoles() {
+    holeGraphics.clear();
+    gameState.holes.forEach((hole) => {
+      holeGraphics.rect(hole.x, groundLevel + hole.height, hole.width, hole.height);
+      holeGraphics.fill(0x000000);
+    });
+  }
+
+  function checkCollisions() {
+    gameState.holes.forEach((hole) => {
+      if (isCharacterInHole(hole)) {
+        gameState.current = 'gameOver';
+        showGameOver();
+      }
+    });
+  }
+
+  function isCharacterInHole(hole) {
+    return character.x + character.width/2 > hole.x && 
+           character.x - character.width/2 < hole.x + hole.width &&
+           character.y + character.height/2 >= groundLevel;
+  }
+
+  function updateCharacter() {
+    if (gameState.isJumping) {
+      character.y += gameState.jumpVelocity;
+      gameState.jumpVelocity += GAME_CONFIG.GRAVITY;
+
+      if (character.y >= groundLevel) {
+        character.y = groundLevel;
+        gameState.isJumping = false;
+        gameState.jumpVelocity = 0;
+      }
+    }
+  }
+
+  function showStartScreen() {
+    const titleText = createCenteredText('JUMP GAME', 48, 0xffffff, -60);
+    const startText = createCenteredText('Press SPACE to start', 24, 0xffffff, 20);
+    app.stage.addChild(titleText);
     app.stage.addChild(startText);
   }
 
-  // Function to show game over
   function showGameOver() {
-    const style = new PIXI.TextStyle({
-      fontFamily: 'Arial',
-      fontSize: 48,
-      fill: 0xff0000,
-      align: 'center',
-    });
-    const gameOverText = new PIXI.Text('GAME OVER', style);
-    gameOverText.x = app.screen.width / 2;
-    gameOverText.y = app.screen.height / 2;
-    gameOverText.anchor.set(0.5);
+    const gameOverText = createCenteredText('GAME OVER', 48, 0xff0000, 0);
+    const restartText = createCenteredText('Press SPACE to restart', 24, 0xffffff, 60);
     app.stage.addChild(gameOverText);
-
-    const restartStyle = new PIXI.TextStyle({
-      fontFamily: 'Arial',
-      fontSize: 24,
-      fill: 0xffffff,
-      align: 'center',
-    });
-    const restartText = new PIXI.Text('Press SPACE to restart', restartStyle);
-    restartText.x = app.screen.width / 2;
-    restartText.y = app.screen.height / 2 + 60;
-    restartText.anchor.set(0.5);
     app.stage.addChild(restartText);
   }
 
-  // Show start screen initially
+  function createCenteredText(text, fontSize, color, offsetY) {
+    const style = new PIXI.TextStyle({
+      fontFamily: 'Arial',
+      fontSize: fontSize,
+      fill: color,
+      align: 'center',
+    });
+    const textElement = new PIXI.Text(text, style);
+    textElement.x = app.screen.width / 2;
+    textElement.y = app.screen.height / 2 + offsetY;
+    textElement.anchor.set(0.5);
+    return textElement;
+  }
+
   showStartScreen();
-  
   gameLoop();
 
 })();
