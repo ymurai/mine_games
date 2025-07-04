@@ -80,60 +80,6 @@
     holes.push(hole);
   }
 
-  // Function to show start screen
-  function showStartScreen() {
-    const titleStyle = new PIXI.TextStyle({
-      fontFamily: 'Arial',
-      fontSize: 48,
-      fill: 0xffffff,
-      align: 'center',
-    });
-    const titleText = new PIXI.Text('JUMP GAME', titleStyle);
-    titleText.x = app.screen.width / 2;
-    titleText.y = app.screen.height / 2 - 60;
-    titleText.anchor.set(0.5);
-    app.stage.addChild(titleText);
-
-    const startStyle = new PIXI.TextStyle({
-      fontFamily: 'Arial',
-      fontSize: 24,
-      fill: 0xffffff,
-      align: 'center',
-    });
-    const startText = new PIXI.Text('Press SPACE to start', startStyle);
-    startText.x = app.screen.width / 2;
-    startText.y = app.screen.height / 2 + 20;
-    startText.anchor.set(0.5);
-    app.stage.addChild(startText);
-  }
-
-  // Function to show game over
-  function showGameOver() {
-    const style = new PIXI.TextStyle({
-      fontFamily: 'Arial',
-      fontSize: 48,
-      fill: 0xff0000,
-      align: 'center',
-    });
-    const gameOverText = new PIXI.Text('GAME OVER', style);
-    gameOverText.x = app.screen.width / 2;
-    gameOverText.y = app.screen.height / 2;
-    gameOverText.anchor.set(0.5);
-    app.stage.addChild(gameOverText);
-
-    const restartStyle = new PIXI.TextStyle({
-      fontFamily: 'Arial',
-      fontSize: 24,
-      fill: 0xffffff,
-      align: 'center',
-    });
-    const restartText = new PIXI.Text('Press SPACE to restart', restartStyle);
-    restartText.x = app.screen.width / 2;
-    restartText.y = app.screen.height / 2 + 60;
-    restartText.anchor.set(0.5);
-    app.stage.addChild(restartText);
-  }
-
   // Key press event listener
   document.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
@@ -229,6 +175,60 @@
       }
     }
     requestAnimationFrame(gameLoop);
+  }
+
+  // Function to show start screen
+  function showStartScreen() {
+    const titleStyle = new PIXI.TextStyle({
+      fontFamily: 'Arial',
+      fontSize: 48,
+      fill: 0xffffff,
+      align: 'center',
+    });
+    const titleText = new PIXI.Text('JUMP GAME', titleStyle);
+    titleText.x = app.screen.width / 2;
+    titleText.y = app.screen.height / 2 - 60;
+    titleText.anchor.set(0.5);
+    app.stage.addChild(titleText);
+
+    const startStyle = new PIXI.TextStyle({
+      fontFamily: 'Arial',
+      fontSize: 24,
+      fill: 0xffffff,
+      align: 'center',
+    });
+    const startText = new PIXI.Text('Press SPACE to start', startStyle);
+    startText.x = app.screen.width / 2;
+    startText.y = app.screen.height / 2 + 20;
+    startText.anchor.set(0.5);
+    app.stage.addChild(startText);
+  }
+
+  // Function to show game over
+  function showGameOver() {
+    const style = new PIXI.TextStyle({
+      fontFamily: 'Arial',
+      fontSize: 48,
+      fill: 0xff0000,
+      align: 'center',
+    });
+    const gameOverText = new PIXI.Text('GAME OVER', style);
+    gameOverText.x = app.screen.width / 2;
+    gameOverText.y = app.screen.height / 2;
+    gameOverText.anchor.set(0.5);
+    app.stage.addChild(gameOverText);
+
+    const restartStyle = new PIXI.TextStyle({
+      fontFamily: 'Arial',
+      fontSize: 24,
+      fill: 0xffffff,
+      align: 'center',
+    });
+    const restartText = new PIXI.Text('Press SPACE to restart', restartStyle);
+    restartText.x = app.screen.width / 2;
+    restartText.y = app.screen.height / 2 + 60;
+    restartText.anchor.set(0.5);
+    app.stage.addChild(restartText);
   }
 
   // Show start screen initially
