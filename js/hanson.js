@@ -29,4 +29,15 @@
   // Move the sprite to the center of the screen
   bunny.x = app.screen.width / 2;
   bunny.y = app.screen.height / 2;
+
+  // Add an animation loop callback to the application's ticker.
+  app.ticker.add((time) => {
+    /**
+     * Just for fun, let's rotate mr rabbit a little.
+     * Time is a Ticker object which holds time related data.
+     * Here we use deltaTime, which is the time elapsed between the frame callbacks
+     * to create frame-independent transformation. Keeping the speed consistent.
+     */
+    bunny.rotation += 0.1 * time.deltaTime;
+  });
 })();
