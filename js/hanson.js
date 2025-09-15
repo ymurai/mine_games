@@ -1,6 +1,7 @@
 // import { Application, Assets, Container, Sprite } from 'pixi.js';
 import { addBackground } from './addBackground.js';
 import { addFishes, animateFishes } from './addFishes.js';
+import { addWaterOverlay, animateWaterOverlay } from './addWaterOverlay.js';
 
 (async () => {
   // Create a new application
@@ -45,9 +46,13 @@ import { addFishes, animateFishes } from './addFishes.js';
 
     addBackground(app);
     addFishes(app, fishes);
+    addWaterOverlay(app);
 
     // Add the fish animation callback to the application's ticker.
-    app.ticker.add((time) => animateFishes(app, fishes, time));
+    app.ticker.add((time) => {
+      animateFishes(app, fishes, time);
+      animateWaterOverlay(app, time);
+    })
   })();
 
 })();
