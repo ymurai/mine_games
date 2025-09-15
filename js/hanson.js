@@ -4,40 +4,38 @@
   // Create a new application
   const app = new PIXI.Application();
 
-  // Initialize the application
-  await app.init({
-    background: '#1099bb',
-    width: 800,
-    height: 600,
-  });
+  // Asynchronous IIFE
+  (async () => {
+    await setup();
+    await preload();
+  })();
 
-  // Then adding the application's canvas to the DOM body.
-  document.body.querySelector('.game-screen').appendChild(app.canvas);
+  async function setup() {
+    // Intialize the application.
+    await app.init({
+      background: '#1099bb',
+      width: 800,
+      height: 600,
+    });
 
-  // Load the bunny texture.
-  const texture = await PIXI.Assets.load('https://pixijs.com/assets/bunny.png');
+    // Then adding the application's canvas to the DOM body.
+    document.body.querySelector('.game-screen').appendChild(app.canvas);
+  }
 
-  // Create a new Sprite from an image path
-  const bunny = new PIXI.Sprite(texture);
+  async function preload() {
+    // Create an array of asset data to load.
+    const assets = [
+      { alias: 'background', src: 'https://pixijs.com/assets/tutorials/fish-pond/pond_background.jpg' },
+      { alias: 'fish1', src: 'https://pixijs.com/assets/tutorials/fish-pond/fish1.png' },
+      { alias: 'fish2', src: 'https://pixijs.com/assets/tutorials/fish-pond/fish2.png' },
+      { alias: 'fish3', src: 'https://pixijs.com/assets/tutorials/fish-pond/fish3.png' },
+      { alias: 'fish4', src: 'https://pixijs.com/assets/tutorials/fish-pond/fish4.png' },
+      { alias: 'fish5', src: 'https://pixijs.com/assets/tutorials/fish-pond/fish5.png' },
+      { alias: 'overlay', src: 'https://pixijs.com/assets/tutorials/fish-pond/wave_overlay.png' },
+      { alias: 'displacement', src: 'https://pixijs.com/assets/tutorials/fish-pond/displacement_map.png' },
+    ];
 
-  // Add to stage
-  app.stage.addChild(bunny);
-
-  // Center the sprite's anchor point
-  bunny.anchor.set(0.5);
-
-  // Move the sprite to the center of the screen
-  bunny.x = app.screen.width / 2;
-  bunny.y = app.screen.height / 2;
-
-  // Add an animation loop callback to the application's ticker.
-  app.ticker.add((time) => {
-    /**
-     * Just for fun, let's rotate mr rabbit a little.
-     * Time is a Ticker object which holds time related data.
-     * Here we use deltaTime, which is the time elapsed between the frame callbacks
-     * to create frame-independent transformation. Keeping the speed consistent.
-     */
-    bunny.rotation += 0.1 * time.deltaTime;
-  });
+    // Load the assets defined above.
+    await PIXI.Assets.load(assets);
+  }
 })();
