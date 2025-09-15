@@ -40,4 +40,18 @@
      */
     bunny.rotation += 0.1 * time.deltaTime;
   });
+
+  // とりあえずお約束のHello,world!
+  const style = new PIXI.TextStyle({
+    fontFamily: 'sans-serif',
+    fontSize: 32,
+    fill: 0xffffff,
+    fontWeight: 'bold',
+    stroke: 0xFF0000,//縁取りの色
+    strokeThickness: 4,//縁取りの太さ
+  });
+  const p = new PIXI.Text("Hello World!", style);
+  p.anchor.set(0.5, 0.5);
+  p.position.set(300, 200);
+  app.stage.addChild(p);
 })();
