@@ -1,5 +1,0 @@
-【PixiJS入門】基本的な使い方まとめ
-https://javascript-game.com/basic-pixijs/#indexhtml
-
-公式サイト（https://pixijs.com/）のスタートガイドが貧弱だったので、こちらを参考にさらにハンズオンをすすめる。
-
