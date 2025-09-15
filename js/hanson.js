@@ -1,14 +1,9 @@
 // import { Application, Assets, Container, Sprite } from 'pixi.js';
+import { addBackground } from './addBackground.js';
 
 (async () => {
   // Create a new application
   const app = new PIXI.Application();
-
-  // Asynchronous IIFE
-  (async () => {
-    await setup();
-    await preload();
-  })();
 
   async function setup() {
     // Intialize the application.
@@ -38,4 +33,13 @@
     // Load the assets defined above.
     await PIXI.Assets.load(assets);
   }
+
+  // Asynchronous IIFE
+  (async () => {
+    await setup();
+    await preload();
+
+    addBackground(app);
+  })();
+
 })();
