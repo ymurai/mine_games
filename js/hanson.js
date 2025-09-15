@@ -1,9 +1,13 @@
 // import { Application, Assets, Container, Sprite } from 'pixi.js';
 import { addBackground } from './addBackground.js';
+import { addFishes, animateFishes } from './addFishes.js';
 
 (async () => {
   // Create a new application
   const app = new PIXI.Application();
+
+  // Store an array of fish sprites for animation.
+  const fishes = [];
 
   async function setup() {
     // Intialize the application.
@@ -40,6 +44,10 @@ import { addBackground } from './addBackground.js';
     await preload();
 
     addBackground(app);
+    addFishes(app, fishes);
+
+    // Add the fish animation callback to the application's ticker.
+    app.ticker.add((time) => animateFishes(app, fishes, time));
   })();
 
 })();
