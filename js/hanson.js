@@ -1,6 +1,7 @@
 // import { Application, Assets, Container, Sprite } from 'pixi.js';
-import { addStars } from './addStars.js';
 import { addMoon } from './addMoon.js';
+import { addMountains } from './addMountains.js';
+import { addStars } from './addStars.js';
 
 (async () => {
   // Create a new application
@@ -18,4 +19,5 @@ import { addMoon } from './addMoon.js';
 
   addStars(app);
   addMoon(app);
+  addMountains(app);
 })();
