@@ -1,5 +1,6 @@
 // import { Application, Assets, Container, Sprite } from 'pixi.js';
 import { addStars } from './addStars.js';
+import { addMoon } from './addMoon.js';
 
 (async () => {
   // Create a new application
@@ -16,4 +17,5 @@ import { addStars } from './addStars.js';
   document.body.querySelector('.game-screen').appendChild(app.canvas);
 
   addStars(app);
+  addMoon(app);
 })();
