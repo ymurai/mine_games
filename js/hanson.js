@@ -60,21 +60,24 @@ import { SpineBoy } from './SpineBoy.js';
   // Add character to the stage.
   app.stage.addChild(spineBoy.view);
 
-  let currentAnimation;
+  // Trigger character's spawn animation.
+  spineBoy.spawn();
 
   // Animate the character - just testing the controller at this point
   app.ticker.add((time) => {
-    const rightPressed = controller.keys.right.pressed;
-    const animationName = rightPressed ? 'walk' : 'idle';
-    const loop = true;
+    // Ignore the update loops while the character is doing the spawn animation.
+    if (spineBoy.isSpawning()) return;
 
-    // Apply the animation if it's different from the active one.
-    if (currentAnimation !== animationName) {
-      // Store the current animation name.
-      currentAnimation = animationName;
+    // Update character's state based on the controller's input.
+    spineBoy.state.walk = controller.keys.left.pressed || controller.keys.right.pressed;
+    if (spineBoy.state.run && spineBoy.state.walk) spineBoy.state.run = true;
+    else spineBoy.state.run = controller.keys.left.doubleTap || controller.keys.right.doubleTap;
+    spineBoy.state.hover = controller.keys.down.pressed;
+    if (controller.keys.left.pressed) spineBoy.direction = -1;
+    else if (controller.keys.right.pressed) spineBoy.direction = 1;
+    spineBoy.state.jump = controller.keys.space.pressed;
 
-      // Animate the character spine based on the right key state,
-      spineBoy.spine.state.setAnimation(0, animationName, loop);
-    }
+    // Update character's animation based on the latest state.
+    spineBoy.update();
   });  
 })();
