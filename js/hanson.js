@@ -2,6 +2,7 @@
 import { addGround } from './addGround.js';
 import { addMoon } from './addMoon.js';
 import { addMountains } from './addMountains.js';
+import { addSmokes } from './addSmokes.js';
 import { addStars } from './addStars.js';
 import { addTrain } from './addTrain.js';
 import { addTrees } from './addTrees.js';
@@ -30,4 +31,5 @@ const trainContainer = new PIXI.Container();
   addTrees(app);
   addGround(app);
   addTrain(app, trainContainer);
+  addSmokes(app, trainContainer);
 })();
