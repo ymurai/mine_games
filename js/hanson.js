@@ -1,35 +1,42 @@
-// import { Application, Assets, Container, Sprite } from 'pixi.js';
-import { addGround } from './addGround.js';
-import { addMoon } from './addMoon.js';
-import { addMountains } from './addMountains.js';
-import { addSmokes } from './addSmokes.js';
-import { addStars } from './addStars.js';
-import { addTrain } from './addTrain.js';
-import { addTrees } from './addTrees.js';
-
-// Create a new application
-const app = new PIXI.Application();
-
-// Create a container to hold all the train parts.
-const trainContainer = new PIXI.Container();
+// import { Application, Assets } from 'pixi.js';
+// import '@esotericsoftware/spine-pixi-v8';
 
 // Asynchronous IIFE
 (async () => {
+  // Create a PixiJS application.
+  const app = new PIXI.Application();
+
   // Intialize the application.
-  await app.init({
-    background: '#021f4b',
-    width: 800,
-    height: 600,
-  });
+  await app.init({ background: '#1099bb', resizeTo: window });
 
   // Then adding the application's canvas to the DOM body.
-  document.body.querySelector('.game-screen').appendChild(app.canvas);
+  document.body.appendChild(app.canvas);
 
-  addStars(app);
-  addMoon(app);
-  addMountains(app);
-  addTrees(app);
-  addGround(app);
-  addTrain(app, trainContainer);
-  addSmokes(app, trainContainer);
+  // Load the assets.
+  await PIXI.Assets.load([
+    {
+      alias: 'spineSkeleton',
+      src: 'https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pro.skel',
+    },
+    {
+      alias: 'spineAtlas',
+      src: 'https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pma.atlas',
+    },
+    {
+      alias: 'sky',
+      src: 'https://pixijs.com/assets/tutorials/spineboy-adventure/sky.png',
+    },
+    {
+      alias: 'background',
+      src: 'https://pixijs.com/assets/tutorials/spineboy-adventure/background.png',
+    },
+    {
+      alias: 'midground',
+      src: 'https://pixijs.com/assets/tutorials/spineboy-adventure/midground.png',
+    },
+    {
+      alias: 'platform',
+      src: 'https://pixijs.com/assets/tutorials/spineboy-adventure/platform.png',
+    },
+  ]);
 })();
