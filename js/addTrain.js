@@ -2,9 +2,13 @@
 
 export function addTrain(app, container) {
   const head = createTrainHead(app);
+  const carriage = createTrainCarriage(app);
 
-  // Add the head to the train container.
-  container.addChild(head);
+  // Position the carriage behind the head.
+  carriage.x = -carriage.width;
+
+  // Add the head and the carriage to the train container.
+  container.addChild(head, carriage);
 
   // Add the train container to the stage.
   app.stage.addChild(container);
@@ -14,10 +18,26 @@ export function addTrain(app, container) {
   // Adjust the scaling of the train.
   container.scale.set(scale);
 
-  // Position the train, taking into account the variety of screen width.
+  // Position the train on the x-axis, taking into account the variety of screen width.
   // To keep the train as the main focus, the train is offset slightly to the left of the screen center.
   container.x = app.screen.width / 2 - head.width / 2;
-  container.y = app.screen.height - 35 - 55 * scale;
+
+  // Define animation parameters.
+  let elapsed = 0;
+  const shakeDistance = 3;
+  const baseY = app.screen.height - 35 - 55 * scale;
+  const speed = 0.5;
+
+  // Initially position the train on the y-axis.
+  container.y = baseY;
+
+  // Animate the train - bobbing it up and down a tiny bit on the track.
+  app.ticker.add((time) => {
+    elapsed += time.deltaTime;
+    const offset = (Math.sin(elapsed * 0.5 * speed) * 0.5 + 0.5) * shakeDistance;
+
+    container.y = baseY + offset;
+  });
 }
 
 function createTrainHead(app) {
@@ -125,6 +145,69 @@ function createTrainHead(app) {
 
     backWheel.rotation += dr * (smallWheelRadius / bigWheelRadius);
     midWheel.rotation += dr;
+    frontWheel.rotation += dr;
+  });
+
+  return container;
+}
+
+function createTrainCarriage(app) {
+  // Create a container to hold all the train carriage parts.
+  const container = new PIXI.Container();
+
+  // Define the dimensions of the carriage parts.
+  const containerHeight = 125;
+  const containerWidth = 200;
+  const containerRadius = 15;
+  const edgeHeight = 25;
+  const edgeExcess = 20;
+  const connectorWidth = 30;
+  const connectorHeight = 10;
+  const connectorGap = 10;
+  const connectorOffsetY = 20;
+
+  const graphics = new PIXI.Graphics()
+    // Draw the body
+    .roundRect(edgeExcess / 2, -containerHeight, containerWidth, containerHeight, containerRadius)
+    .fill({ color: 0x725f19 })
+
+    // Draw the top edge
+    .rect(0, containerRadius - containerHeight - edgeHeight, containerWidth + edgeExcess, edgeHeight)
+    .fill({ color: 0x52431c })
+
+    // Draw the connectors
+    .rect(containerWidth + edgeExcess / 2, -connectorOffsetY - connectorHeight, connectorWidth, connectorHeight)
+    .rect(
+      containerWidth + edgeExcess / 2,
+      -connectorOffsetY - connectorHeight * 2 - connectorGap,
+      connectorWidth,
+      connectorHeight,
+    )
+    .fill({ color: 0x121212 });
+
+  // Define the dimensions of the wheels.
+  const wheelRadius = 35;
+  const wheelGap = 40;
+  const centerX = (containerWidth + edgeExcess) / 2;
+  const offsetX = wheelRadius + wheelGap / 2;
+
+  // Create the wheels.
+  const backWheel = createTrainWheel(wheelRadius);
+  const frontWheel = createTrainWheel(wheelRadius);
+
+  // Position the wheels.
+  backWheel.x = centerX - offsetX;
+  frontWheel.x = centerX + offsetX;
+  frontWheel.y = backWheel.y = 25;
+
+  // Add all the parts to the container.
+  container.addChild(graphics, backWheel, frontWheel);
+
+  // Animate the wheels.
+  app.ticker.add((time) => {
+    const dr = time.deltaTime * 0.15;
+
+    backWheel.rotation += dr;
     frontWheel.rotation += dr;
   });
 
