@@ -1,5 +1,6 @@
 // import { Application, Assets } from 'pixi.js';
 // import '@esotericsoftware/spine-pixi-v8';
+import { Controller } from './Controller.js';
 import { SpineBoy } from './SpineBoy.js';
 
 // Asynchronous IIFE
@@ -45,6 +46,9 @@ import { SpineBoy } from './SpineBoy.js';
     },
   ]);
 
+  // Create a controller that handles keyboard inputs.
+  const controller = new Controller();
+
   // Create our character
   const spineBoy = new SpineBoy();
 
@@ -55,4 +59,22 @@ import { SpineBoy } from './SpineBoy.js';
 
   // Add character to the stage.
   app.stage.addChild(spineBoy.view);
+
+  let currentAnimation;
+
+  // Animate the character - just testing the controller at this point
+  app.ticker.add((time) => {
+    const rightPressed = controller.keys.right.pressed;
+    const animationName = rightPressed ? 'walk' : 'idle';
+    const loop = true;
+
+    // Apply the animation if it's different from the active one.
+    if (currentAnimation !== animationName) {
+      // Store the current animation name.
+      currentAnimation = animationName;
+
+      // Animate the character spine based on the right key state,
+      spineBoy.spine.state.setAnimation(0, animationName, loop);
+    }
+  });  
 })();
