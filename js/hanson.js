@@ -1,4 +1,5 @@
 // import { Application, Assets, Container, Sprite } from 'pixi.js';
+import { addGround } from './addGround.js';
 import { addMoon } from './addMoon.js';
 import { addMountains } from './addMountains.js';
 import { addStars } from './addStars.js';
@@ -22,4 +23,5 @@ import { addTrees } from './addTrees.js';
   addMoon(app);
   addMountains(app);
   addTrees(app);
+  addGround(app);
 })();
