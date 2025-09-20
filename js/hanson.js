@@ -1,6 +1,7 @@
 // import { Application, Assets } from 'pixi.js';
 // import '@esotericsoftware/spine-pixi-v8';
 import { Controller } from './Controller.js';
+import { Scene } from './Scene.js';
 import { SpineBoy } from './SpineBoy.js';
 
 // Asynchronous IIFE
@@ -49,16 +50,20 @@ import { SpineBoy } from './SpineBoy.js';
   // Create a controller that handles keyboard inputs.
   const controller = new Controller();
 
+  // Create a scene that holds the environment.
+  const scene = new Scene(app.screen.width, app.screen.height);
+
   // Create our character
   const spineBoy = new SpineBoy();
 
-  // Adjust character transformation.
+  // Adjust views' transformation.
+  scene.view.y = app.screen.height;
   spineBoy.view.x = app.screen.width / 2;
-  spineBoy.view.y = app.screen.height - 80;
-  spineBoy.spine.scale.set(0.5);
+  spineBoy.view.y = app.screen.height - scene.floorHeight;
+  spineBoy.spine.scale.set(scene.scale * 0.32);
 
   // Add character to the stage.
-  app.stage.addChild(spineBoy.view);
+  app.stage.addChild(scene.view, spineBoy.view);
 
   // Trigger character's spawn animation.
   spineBoy.spawn();
