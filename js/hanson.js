@@ -3,12 +3,17 @@ import { addGround } from './addGround.js';
 import { addMoon } from './addMoon.js';
 import { addMountains } from './addMountains.js';
 import { addStars } from './addStars.js';
+import { addTrain } from './addTrain.js';
 import { addTrees } from './addTrees.js';
 
-(async () => {
-  // Create a new application
-  const app = new PIXI.Application();
+// Create a new application
+const app = new PIXI.Application();
 
+// Create a container to hold all the train parts.
+const trainContainer = new PIXI.Container();
+
+// Asynchronous IIFE
+(async () => {
   // Intialize the application.
   await app.init({
     background: '#021f4b',
@@ -24,4 +29,5 @@ import { addTrees } from './addTrees.js';
   addMountains(app);
   addTrees(app);
   addGround(app);
+  addTrain(app, trainContainer);
 })();
