@@ -1,5 +1,6 @@
 // import { Application, Assets } from 'pixi.js';
 // import '@esotericsoftware/spine-pixi-v8';
+import { SpineBoy } from './SpineBoy.js';
 
 // Asynchronous IIFE
 (async () => {
@@ -7,10 +8,14 @@
   const app = new PIXI.Application();
 
   // Intialize the application.
-  await app.init({ background: '#1099bb', resizeTo: window });
+  await app.init({
+    background: '#1099bb',
+    width: 800,
+    height: 600,
+  });
 
   // Then adding the application's canvas to the DOM body.
-  document.body.appendChild(app.canvas);
+  document.body.querySelector('.game-screen').appendChild(app.canvas);
 
   // Load the assets.
   await PIXI.Assets.load([
@@ -39,4 +44,15 @@
       src: 'https://pixijs.com/assets/tutorials/spineboy-adventure/platform.png',
     },
   ]);
+
+  // Create our character
+  const spineBoy = new SpineBoy();
+
+  // Adjust character transformation.
+  spineBoy.view.x = app.screen.width / 2;
+  spineBoy.view.y = app.screen.height - 80;
+  spineBoy.spine.scale.set(0.5);
+
+  // Add character to the stage.
+  app.stage.addChild(spineBoy.view);
 })();
