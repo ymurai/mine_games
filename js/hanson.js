@@ -84,5 +84,14 @@ import { SpineBoy } from './SpineBoy.js';
 
     // Update character's animation based on the latest state.
     spineBoy.update();
+
+    // Determine the scene's horizontal scrolling speed based on the character's state.
+    let speed = 1.25;
+
+    if (spineBoy.state.hover) speed = 7.5;
+    else if (spineBoy.state.run) speed = 3.75;
+
+    // Shift the scene's position based on the character's facing direction, if in a movement state.
+    if (spineBoy.state.walk) scene.positionX -= speed * scene.scale * spineBoy.direction;
   });  
 })();
